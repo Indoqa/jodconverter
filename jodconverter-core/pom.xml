@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.artofsolving.jodconverter</groupId>
+  <parent>
+    <groupId>com.indoqa</groupId>
+    <artifactId>indoqa-maven-root</artifactId>
+    <version>16</version>
+  </parent>
+
+
+  <groupId>com.indoqa.jodconverter</groupId>
   <artifactId>jodconverter-core</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>JODConverter - Core Library</name>
@@ -41,15 +47,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sigar-version>1.6.4</sigar-version>
+    <native-libs-dir>${project.build.directory}/native-libs</native-libs-dir>
   </properties>
-
-  <repositories>
-    <repository>
-      <!-- required for org.hyperic:sigar -->
-      <id>jboss-public-repository-group</id>
-      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-    </repository>
-  </repositories>
 
   <dependencies>
 
@@ -85,11 +85,32 @@
       <version>1.1</version>
       <optional>true</optional>
     </dependency>
+    <!-- Hyperic Sigar -->
     <dependency>
-      <!-- for more robust process management -->
-      <groupId>org.hyperic</groupId>
+      <groupId>com.indoqa.thirdparty</groupId>
       <artifactId>sigar</artifactId>
-      <version>1.6.5.132</version>
+      <version>${sigar-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.indoqa.thirdparty</groupId>
+      <artifactId>sigar</artifactId>
+      <version>${sigar-version}</version>
+      <classifier>natives-linux</classifier>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.indoqa.thirdparty</groupId>
+      <artifactId>sigar</artifactId>
+      <version>${sigar-version}</version>
+      <classifier>natives-winnt</classifier>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.indoqa.thirdparty</groupId>
+      <artifactId>sigar</artifactId>
+      <version>${sigar-version}</version>
+      <classifier>natives-macosx</classifier>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -100,7 +121,7 @@
       <optional>true</optional>
     </dependency>
 
-    <!--  Test dependencies -->
+    <!-- Test dependencies -->
 
     <dependency>
       <groupId>org.testng</groupId>
@@ -115,28 +136,22 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.7.2</version>
         <configuration>
           <!-- don't run tests in parallel -->
           <perCoreThreadCount>false</perCoreThreadCount>
           <threadCount>1</threadCount>
+          <systemProperties>
+            <property>
+              <name>java.library.path</name>
+              <value>${native-libs-dir}</value>
+            </property>
+          </systemProperties>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -149,29 +164,45 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-5</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/dist.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.indoqa.thirdparty</groupId>
+                  <artifactId>sigar</artifactId>
+                  <classifier>natives-linux</classifier>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.indoqa.thirdparty</groupId>
+                  <artifactId>sigar</artifactId>
+                  <classifier>natives-winnt</classifier>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.indoqa.thirdparty</groupId>
+                  <artifactId>sigar</artifactId>
+                  <classifier>natives-macosx</classifier>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${native-libs-dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
 </project>
