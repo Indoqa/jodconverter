@@ -202,8 +202,8 @@
   </build>
 
   <scm>
-    <connection>scm:git:https://github.com/Indoqa/jodconverter.git</connection>
-    <developerConnection>scm:git:https://github.com/Indoqa/jodconverter.git</developerConnection>
+    <connection>scm:git:git://github.com/Indoqa/jodconverter.git</connection>
+    <developerConnection>scm:git:git@github.com/Indoqa/jodconverter.git</developerConnection>
     <url>https://github.com/Indoqa/jodconverter</url>
   </scm>
 </project>
