@@ -45,9 +45,8 @@
     <sigar-version>1.6.4</sigar-version>
     <native-libs-dir>${project.build.directory}/native-libs</native-libs-dir>
   </properties>
-
+  
   <dependencies>
-
     <!-- Required dependencies -->
 
     <dependency>
@@ -128,6 +127,15 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+	  
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
