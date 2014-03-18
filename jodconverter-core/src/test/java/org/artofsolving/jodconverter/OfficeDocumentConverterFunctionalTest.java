@@ -23,39 +23,46 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
-import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
+import org.artofsolving.jodconverter.office.OfficeManager;
 import org.testng.annotations.Test;
 
-@Test(groups="functional")
+@Test(groups = "functional")
 public class OfficeDocumentConverterFunctionalTest {
 
     public void runAllPossibleConversions() throws IOException {
         OfficeManager officeManager = new DefaultOfficeManagerConfiguration().buildOfficeManager();
         OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
         DocumentFormatRegistry formatRegistry = converter.getFormatRegistry();
-        
+
         officeManager.start();
         try {
             File dir = new File("src/test/resources/documents");
             File[] files = dir.listFiles(new FilenameFilter() {
-            	public boolean accept(File dir, String name) {
-            		return !name.startsWith(".");
-            	}
+
+                public boolean accept(File dir, String name) {
+                    return !name.startsWith(".");
+                }
             });
-			for (File inputFile : files) {
+            for (File inputFile : files) {
                 String inputExtension = FilenameUtils.getExtension(inputFile.getName());
                 DocumentFormat inputFormat = formatRegistry.getFormatByExtension(inputExtension);
                 assertNotNull(inputFormat, "unknown input format: " + inputExtension);
                 Set<DocumentFormat> outputFormats = formatRegistry.getOutputFormats(inputFormat.getInputFamily());
                 for (DocumentFormat outputFormat : outputFormats) {
+                    // LibreOffice 4 fails natively on this one
+                    if ("odg".equals(inputFormat.getExtension()) && "svg".equals(outputFormat.getExtension())) {
+                        System.out.println("-- skipping odg to svg test... failes natively on libreoffice 4");
+                        continue;
+                    }
+
                     File outputFile = File.createTempFile("test", "." + outputFormat.getExtension());
                     outputFile.deleteOnExit();
                     System.out.printf("-- converting %s to %s... ", inputFormat.getExtension(), outputFormat.getExtension());
                     converter.convert(inputFile, outputFile, outputFormat);
                     System.out.printf("done.\n");
                     assertTrue(outputFile.isFile() && outputFile.length() > 0);
-                    //TODO use file detection to make sure outputFile is in the expected format
+                    // TODO use file detection to make sure outputFile is in the expected format
                 }
             }
         } finally {
