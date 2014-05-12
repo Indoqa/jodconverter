@@ -11,7 +11,7 @@
 
   <groupId>com.indoqa.jodconverter</groupId>
   <artifactId>jodconverter-core</artifactId>
-  <version>3.0.0.3</version>
+  <version>3.0.0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>JODConverter - Core Library</name>
@@ -225,6 +225,6 @@
     <connection>scm:git:git://github.com/Indoqa/jodconverter.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Indoqa/jodconverter.git</developerConnection>
     <url>https://github.com/Indoqa/jodconverter</url>
-    <tag>jodconverter-core-3.0.0.3</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>
