@@ -128,18 +128,26 @@
 
   <build>
     <plugins>
+      <!--
+        There are some issues with the maven-release-plugin and git.
+        http://jira.codehaus.org/browse/MRELEASE-812
+        http://jira.codehaus.org/browse/MRELEASE-875
+        http://jira.codehaus.org/browse/SCM-740
+        Until these will be fixed (maven-scm-provider-gitexe 1.10) we use a patched 1.9 version from:        
+        http://blog.novoj.net/2014/01/24/maven-release-plugin-releases-snapshot-instead-of-stable-version
+      -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.4.2</version>
-         <dependencies>
-            <dependency>
-               <groupId>org.apache.maven.scm</groupId>
-               <artifactId>maven-scm-provider-gitexe</artifactId>
-               <version>1.8.1</version>
-            </dependency>
-         </dependencies>	
-      </plugin>         
+        <version>2.5</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.9-patched</version>
+          </dependency>
+       </dependencies>
+      </plugin>
+
   
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
